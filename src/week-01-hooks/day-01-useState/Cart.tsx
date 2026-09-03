@@ -41,7 +41,7 @@ export function Cart() {
     }
 
     const lines = item.map((line) => {
-        const product = PRODUCTS.find((p) => p.id === line.id);
+        const product = PRODUCTS.find((p) => p.id === line.id)!;
         return {...product, quantity: line.quantity, lineTotal: product?.price * line.quantity}
     });
 
