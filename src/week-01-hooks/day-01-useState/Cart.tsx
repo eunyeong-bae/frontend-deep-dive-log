@@ -17,10 +17,10 @@ function loadCart(): CartItem[] {
 }
 
 export function Cart() {
-    const [item, setItem] = useState<CartItem[]>(loadCart);
+    const [items, setItems] = useState<CartItem[]>(loadCart);
 
     const addToCart = (id: string) => {        
-        setItem((prev) => {
+        setItems((prev) => {
             const existing = prev.find((i) => i.id === id);
             if(!existing) return [...prev, {id, quantity: 1}];
             return prev.map((line) => line.id === id ? {...line, quantity: line.quantity +1} : line);
@@ -28,7 +28,7 @@ export function Cart() {
     };
 
     const changeQty = (id: string, delta: number) => {
-        setItem((prev) => 
+        setItems((prev) => 
             prev
                 .map((line) => line.id === id ? {...line, quantity: line.quantity + delta}: line)
                 .filter((line) => line.quantity > 0)
@@ -36,17 +36,17 @@ export function Cart() {
         )
     }
 
-    const lines = item.map((line) => {
+    const lines = items.map((line) => {
         const product = PRODUCTS.find((p) => p.id === line.id)!;
-        return {...product, quantity: line.quantity, lineTotal: product?.price * line.quantity}
+        return {...product, quantity: line.quantity, lineTotal: product.price * line.quantity}
     });
 
-    const totalCount = item.reduce((sum, line) => sum + line.quantity, 0);
+    const totalCount = items.reduce((sum, line) => sum + line.quantity, 0);
     const totalPrice = lines.reduce((sum, line) => sum + line.lineTotal, 0);
 
     useEffect(() => {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(item));
-    }, [item]);
+        localStorage.setItems(STORAGE_KEY, JSON.stringify(items));
+    }, [items]);
 
     return (
         <div>
@@ -88,7 +88,7 @@ export function Cart() {
            
             <p>무료배송: {totalPrice >= 30000 ? '배송비 0원' : `${30000 - totalPrice}원 더 담으면 무료배송`}</p>
             
-            <button onClick={() => setItem([])}>비우기</button> 
+            <button onClick={() => setItems([])}>비우기</button> 
 
         </div>
     )
