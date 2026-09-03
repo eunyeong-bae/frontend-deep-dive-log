@@ -45,7 +45,7 @@ export function Cart() {
     const totalPrice = lines.reduce((sum, line) => sum + line.lineTotal, 0);
 
     useEffect(() => {
-        localStorage.setItems(STORAGE_KEY, JSON.stringify(items));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
     }, [items]);
 
     return (
@@ -65,8 +65,8 @@ export function Cart() {
                 })}
             </div>
 
-            <div>
-                <h2>장바구니</h2>
+            <section aria-labelledby='cart-heading'>
+                <h2 id="cart-heading">장바구니</h2>
                 {lines.map((line) => {
                     return (
                         <div key={line.id} style={{display:'flex'}}>
@@ -84,7 +84,7 @@ export function Cart() {
 
                 <p> 총 수량: {totalCount}</p>
                 <p> 총 금액: {totalPrice}원</p>
-            </div>
+            </section>
            
             <p>무료배송: {totalPrice >= 30000 ? '배송비 0원' : `${30000 - totalPrice}원 더 담으면 무료배송`}</p>
             
