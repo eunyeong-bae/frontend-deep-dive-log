@@ -17,7 +17,7 @@ function loadCart(): CartItem[] {
 }
 
 export function Cart() {
-    const [item, setItem] = useState<CartItem[]>(loadCart());
+    const [item, setItem] = useState<CartItem[]>(loadCart);
 
     const findProductById = (id: string) : Product | undefined => {
         return PRODUCTS.find((product) => product.id === id);
