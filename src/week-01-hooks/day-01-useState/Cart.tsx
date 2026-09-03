@@ -1,57 +1,56 @@
 import { type Product, PRODUCTS } from './products'
-import { useState, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 
-interface ItemProps {
-    name: string;
-    stock: number;
-    totalPrice: number;
-    possibleStock: number;
+interface CartItem {
+    id: string;
+    quantity: number;
+}
+
+const STORAGE_KEY = 'cart';
+function loadCart(): CartItem[] {
+    try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : [];
+    }catch{
+        return [];
+    }
 }
 
 export function Cart() {
-    // const [item, setItem] = useState<ItemProps[]>(() => {
-    //     const savedCart = localStorage.getItem('cart');
-    //     return savedCart ? JSON.parse(savedCart) : localStorage.setItem('cart', JSON.stringify([]));
-    // });
-    const [item, setItem] = useState<ItemProps[]>([]);
+    const [item, setItem] = useState<CartItem[]>(loadCart());
 
-    const handleAddToCart = (product: Product) => {
-        console.log('clicked', product)
-        
-        findItemIndex(product);
+    const findProductById = (id: string) : Product | undefined => {
+        return PRODUCTS.find((product) => product.id === id);
+    }
 
+    const addToCart = (id: string) => {        
+        setItem((prev) => {
+            const existing = prev.find((i) => i.id === id);
+            if(!existing) return [...prev, {id, quantity: 1}];
+            return prev.map((line) => line.id === id ? {...line, quantity: line.quantity +1} : line);
+        })
     };
 
-    const findItemIndex = (product: Product) => {
-        const originItem = item.find(item => item.name === product.name);
+    const changeQty = (id: string, delta: number) => {
+        setItem((prev) => 
+            prev
+                .map((line) => line.id === id ? {...line, quantity: line.quantity + delta}: line)
+                .filter((line) => line.quantity > 0)
 
-        if(!originItem) setItem((prev) => [...prev, {name: product.name, stock: 1, totalPrice: product.price, possibleStock: product.stock}]);
-        else {
-            const newItem = {...originItem, stock: originItem.stock + 1, totalPrice: originItem.totalPrice + product.price};
-            setItem((prev) => prev.map(item => item.name === product.name ? newItem : item));
-        }
+        )
     }
 
-    const handleQuantityChange = (item: ItemProps, status: boolean) => {
-        if(item.stock === 0 && !status) {
-            const removedItem = {...item};
-            setItem((prev) => prev.filter(i => i.name !== removedItem.name));
-            return;
-        }
+    const lines = item.map((line) => {
+        const product = PRODUCTS.find((p) => p.id === line.id);
+        return {...product, quantity: line.quantity, lineTotal: product?.price * line.quantity}
+    });
 
-        if(status) {
-            const newItem = {...item, stock: item.stock + 1, totalPrice: item.totalPrice + item.totalPrice / item.stock};
-            setItem((prev) => prev.map(i => i.name === item.name ? newItem : i));
-        } else {
-            const newItem = {...item, stock: item.stock - 1, totalPrice: item.totalPrice - item.totalPrice / item.stock};
-            setItem((prev) => prev.map(i => i.name === item.name ? newItem : i));
-        }
-    }
+    const totalCount = item.reduce((sum, line) => sum + line.quantity, 0);
+    const totalPrice = lines.reduce((sum, line) => sum + line.lineTotal, 0);
 
-    const totalPrice = useMemo(() => {
-        return item.reduce((acc,curr) => acc+curr.totalPrice, 0);
+    useEffect(() => {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(item));
     }, [item]);
-
 
     return (
         <div>
@@ -64,7 +63,7 @@ export function Cart() {
                                 <p>가격: {product.price}원</p>
                                 <p>재고: {product.stock}</p>
                             </div>
-                            <button onClick={() => handleAddToCart(product)}>담기</button>
+                            <button onClick={() => addToCart(product.id)}>담기</button>
                         </div>
                     )
                 })}
@@ -72,27 +71,27 @@ export function Cart() {
 
             <div>
                 <h2>장바구니</h2>
-                {item.map((item: ItemProps) => {
-                    return item.stock > 0 ? (
-                        <div id={item.name} style={{display:'flex'}}>
-                            <p>{item.name}</p>
+                {item.map((item: CartItem) => {
+                    return (
+                        <div id={item.id} style={{display:'flex'}}>
+                            <p>{findProductById(item.id)?.name}</p>
                             <div style={{display:'flex', flexDirection:'row', marginLeft:'10px'}}>
-                                <button disabled={item.stock>= item.possibleStock} onClick={() => {handleQuantityChange(item, true)}}>+</button>
-                                <p>수량: {item.stock }원</p>
-                                <button onClick={() => {handleQuantityChange(item, false)}}>-</button>
+                                <button onClick={() => {changeQty(item.id, 1)}}>+</button>
+                                <p>수량: {item.quantity}</p>
+                                <button onClick={() => {changeQty(item.id, -1)}}>-</button>
 
                             </div>
-                            <p>총 가격: {item.totalPrice}원</p>
+                            <p>총 가격: {lines.find((line) => line.id === item.id)?.lineTotal}원</p>
                         </div>
-                    ) : null
+                    ) 
                 })}
 
-                <p> 총 수량: {item.reduce((acc, curr) => acc + curr.stock, 0)}</p>
+                <p> 총 수량: {totalCount}</p>
                 <p> 총 금액: {totalPrice}원</p>
             </div>
-            
+{/*             
             <p>무료배송: {totalPrice >= 30000 ? '배송비 0원' : `${30000 - totalPrice}원 더 담으면 무료배송`}</p>
-            <button onClick={() => setItem([])}>비우기</button>
+            <button onClick={() => setItem([])}>비우기</button> */}
 
         </div>
     )
