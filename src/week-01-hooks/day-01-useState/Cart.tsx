@@ -89,9 +89,10 @@ export function Cart() {
                 <p> 총 수량: {totalCount}</p>
                 <p> 총 금액: {totalPrice}원</p>
             </div>
-{/*             
+           
             <p>무료배송: {totalPrice >= 30000 ? '배송비 0원' : `${30000 - totalPrice}원 더 담으면 무료배송`}</p>
-            <button onClick={() => setItem([])}>비우기</button> */}
+            
+            <button onClick={() => setItem([])}>비우기</button> 
 
         </div>
     )
