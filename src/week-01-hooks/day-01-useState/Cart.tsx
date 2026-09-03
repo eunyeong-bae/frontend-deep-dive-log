@@ -19,10 +19,6 @@ function loadCart(): CartItem[] {
 export function Cart() {
     const [item, setItem] = useState<CartItem[]>(loadCart);
 
-    const findProductById = (id: string) : Product | undefined => {
-        return PRODUCTS.find((product) => product.id === id);
-    }
-
     const addToCart = (id: string) => {        
         setItem((prev) => {
             const existing = prev.find((i) => i.id === id);
@@ -71,17 +67,17 @@ export function Cart() {
 
             <div>
                 <h2>장바구니</h2>
-                {item.map((item: CartItem) => {
+                {lines.map((line) => {
                     return (
-                        <div key={item.id} style={{display:'flex'}}>
-                            <p>{findProductById(item.id)?.name}</p>
+                        <div key={line.id} style={{display:'flex'}}>
+                            <p>{line.name}</p>
                             <div style={{display:'flex', flexDirection:'row', marginLeft:'10px'}}>
-                                <button onClick={() => {changeQty(item.id, 1)}}>+</button>
-                                <p>수량: {item.quantity}</p>
-                                <button onClick={() => {changeQty(item.id, -1)}}>-</button>
+                                <button disabled={line.quantity >= line.stock} onClick={() => {changeQty(line.id, 1)}}>+</button>
+                                <p>수량: {line.quantity}</p>
+                                <button onClick={() => {changeQty(line.id, -1)}}>-</button>
 
                             </div>
-                            <p>총 가격: {lines.find((line) => line.id === item.id)?.lineTotal}원</p>
+                            <p>총 가격: {line.lineTotal}원</p>
                         </div>
                     ) 
                 })}
