@@ -57,7 +57,7 @@ export function Cart() {
             <div style={{height: '50%'}}>
                 {PRODUCTS.map((product:Product) => {
                     return (
-                        <div id={product.id} style={{display:'flex', flexDirection:'row', justifyContent:'space-between', border:'1px solid black', marginBottom:'10px', padding:'10px'}}>
+                        <div key={product.id} style={{display:'flex', flexDirection:'row', justifyContent:'space-between', border:'1px solid black', marginBottom:'10px', padding:'10px'}}>
                             <div>
                                 <h3>{product.name}</h3>
                                 <p>가격: {product.price}원</p>
@@ -73,7 +73,7 @@ export function Cart() {
                 <h2>장바구니</h2>
                 {item.map((item: CartItem) => {
                     return (
-                        <div id={item.id} style={{display:'flex'}}>
+                        <div key={item.id} style={{display:'flex'}}>
                             <p>{findProductById(item.id)?.name}</p>
                             <div style={{display:'flex', flexDirection:'row', marginLeft:'10px'}}>
                                 <button onClick={() => {changeQty(item.id, 1)}}>+</button>
