@@ -80,7 +80,7 @@ test('합계 30,000 미만 -> N원 더.. / 이상 -> 배송비 0원 ', async() =
     const user = userEvent.setup();
     render(<Cart />)
 
-    const cart = screen.getByRole('region', {name: '장바구니'})
+    // const cart = screen.getByRole('region', {name: '장바구니'})
     const addButtons = screen.getAllByRole('button', {name: '담기'})
     
     await user.click(addButtons[4])
