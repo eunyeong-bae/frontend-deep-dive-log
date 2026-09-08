@@ -14,15 +14,16 @@ export function UserSearch() {
     }
 
     useEffect(function detectChangingKeyword(){
-        
-        if(input.trim() === '') {
+        const query = input.trim();
+
+        if(query === '') {
             return;
         }
 
         const getUsers = async() => {
             setIsLoading(true);
             try{
-                const result = await searchUsers(input);
+                const result = await searchUsers(query);
                 setUsers(result);
             } catch {
                 setUsers([]);
