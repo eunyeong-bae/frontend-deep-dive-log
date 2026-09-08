@@ -42,6 +42,7 @@ export function UserSearch() {
                 onChange={(e) => handleKeyword(e)} 
                 value={input}    
             />
+            {isLoading && <div>검색 중 ....</div>  }
            
             {users?.map((user) => {
                 return (
