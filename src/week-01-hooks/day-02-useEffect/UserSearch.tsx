@@ -6,7 +6,7 @@ import { searchUsers, type User } from "./fakeApi";
 
 export function UserSearch() {
     const [input, setInput] = useState<string>('');
-    const [users, setUsers] = useState<User[]>();
+    const [users, setUsers] = useState<User[]>([]);
     const [isLoading, setIsLoading] = useState<boolean>(false);
 
     const handleKeyword = (e: ChangeEvent<HTMLInputElement>) => {
@@ -15,18 +15,21 @@ export function UserSearch() {
 
     useEffect(function detectChangingKeyword(){
         
-        if(input === '') return;
+        if(input.trim() === '') {
+            return;
+        }
 
         const getUsers = async() => {
             setIsLoading(true);
-
-            const result = await searchUsers(input);
-            console.log("🚀 ~ getUsers ~ result:", result)
-
-            setUsers(result);
-          
-            
-            setIsLoading(false);
+            try{
+                const result = await searchUsers(input);
+                setUsers(result);
+            } catch {
+                setUsers([]);
+                throw new Error('에러 발생')
+            }finally {
+                setIsLoading(false);
+            }
         }
 
         getUsers();
@@ -37,20 +40,18 @@ export function UserSearch() {
     return (
         <div style={{width:'50%', margin:'0 auto'}}>
             <input 
-                type="input" 
+                type="text" 
                 placeholder="검색어를 입력하세요..." 
-                onChange={(e) => handleKeyword(e)} 
+                onChange={handleKeyword} 
                 value={input}    
             />
             {isLoading && <div>검색 중 ....</div>  }
            
-            {users?.map((user) => {
-                return (
-                    <ul key={user.id} style={{display:'flex', flexDirection:'row', justifyContent:'space-between'}}>
-                        <li >{user.name}</li>
-                        <li>{user.email}</li>
-                    </ul>
-                )})}
+            <ul>
+                {users.map((user) => (
+                    <li key={user.id}>{user.name} — {user.email}</li>
+                ))}
+            </ul>
             
         </div>
     )
