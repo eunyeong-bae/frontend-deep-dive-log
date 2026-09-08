@@ -26,7 +26,6 @@ export function UserSearch() {
                 setUsers(result);
             } catch {
                 setUsers([]);
-                throw new Error('에러 발생')
             }finally {
                 setIsLoading(false);
             }
