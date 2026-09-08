@@ -35,8 +35,6 @@ export function UserSearch() {
         getUsers();
     }, [input])
 
-    if(isLoading) return <div>검색 중 ....</div>
-
     return (
         <div style={{width:'50%', margin:'0 auto'}}>
             <input 
