@@ -35,6 +35,8 @@ export function UserSearch() {
         getUsers();
     }, [input])
 
+    const results = input.trim() === '' ? [] : users;
+
     return (
         <div style={{width:'50%', margin:'0 auto'}}>
             <input 
@@ -46,7 +48,7 @@ export function UserSearch() {
             {isLoading && <div>검색 중 ....</div>  }
            
             <ul>
-                {users.map((user) => (
+                {results.map((user) => (
                     <li key={user.id}>{user.name} — {user.email}</li>
                 ))}
             </ul>
