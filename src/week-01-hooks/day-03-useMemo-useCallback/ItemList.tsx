@@ -1,14 +1,15 @@
-import { useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import { makeItems, type Item } from "./makeItems"
 import { useRenderCount } from "./useRenderCount";
 
 const DATA = makeItems(500);
 
-function Row({item}: {item: Item}) {
+const Row = memo(function Row({item, onSelect}: {item: Item, onSelect:(id: number)=>void}) {
     const renderCount = useRenderCount();
 
-    return <p>{item.name} - Render {renderCount}회</p>
-}
+    return <p onClick={() => onSelect(item.id)}>{item.name} - Render {renderCount}회</p>
+})
+
 export function ItemList () {
     const [count, setCount] = useState(0);
     const [keyword, setKeyword] = useState('');
@@ -24,6 +25,10 @@ export function ItemList () {
             return b.score - a.score
         });
     }, [keyword, category, sort])
+
+    const handleSelect = useCallback((id: number) => {
+        console.log(id)
+    }, []);
 
     return (
         <div style={{width:'50%', margin:'0 auto'}}>
@@ -43,7 +48,7 @@ export function ItemList () {
 
             <p>{visibleItems.length}개</p>
             {visibleItems.map((item) => (
-                <Row key={item.id} item={item}/>
+                <Row key={item.id} item={item} onSelect={handleSelect}/>
             ))}
 
         </div>
